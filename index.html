@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALTUS HEAVY INDUSTRIES — Olympo AI</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <h1>ALTUS HEAVY INDUSTRIES</h1>
+  <p>Ingeniería · Transporte Pesado · Soluciones Industriales</p>
+</header>
+
+<section class="content">
+  <h2>Nosotros</h2>
+  <p>Empresa industrial líder en transporte pesado, telemetría y soluciones logísticas.</p>
+
+  <h2>Servicios</h2>
+  <ul>
+    <li>Transporte de carga extrema</li>
+    <li>Optimización de flota con IA</li>
+    <li>Telemática y monitoreo 24/7</li>
+    <li>Mantenimiento industrial</li>
+    <li>Fabricación y soluciones especializadas</li>
+  </ul>
+</section>
+
+<div class="chat-launcher" onclick="toggleChat()">O</div>
+
+<div class="chat-box" id="chatBox">
+  <div class="chat-header">
+    <span>Olympo · AI Industrial</span>
+    <button onclick="toggleChat()">×</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">Hola, soy Olympo. ¿En qué te ayudo?</div>
+  </div>
+
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Escribe tu mensaje..." 
+           onkeydown="if(event.key==='Enter') sendMsg();">
+    <button onclick="sendMsg()">Enviar</button>
+  </div>
+</div>
+
+<footer class="footer">© 2025 Altus Heavy Industries</footer>
+
+<script>
+  const WEBHOOK_URL = "https://efesios.app.n8n.cloud/webhook/277a96c5-447a-4fc2-8ec3-3bcf5b8e0da7";
+
+  function toggleChat() {
+    document.getElementById("chatBox").classList.toggle("open");
+  }
+
+  function appendMsg(text, sender) {
+    const wrap = document.getElementById("chatMessages");
+    const div = document.createElement("div");
+    div.className = "msg " + sender;
+    div.innerHTML = text;
+    wrap.appendChild(div);
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+
+  async function sendMsg() {
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    appendMsg(msg, "user");
+    input.value = "";
+
+    appendMsg("Olympo está escribiendo…", "loading");
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+
+      const data = await res.json();
+      document.querySelector(".loading").remove();
+      appendMsg(data.answer || JSON.stringify(data), "bot");
+
+    } catch (error) {
+      document.querySelector(".loading").remove();
+      appendMsg("Error conectando con Olympo.", "bot");
+    }
+  }
+</script>
+
+</body>
+</html>
